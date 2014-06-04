@@ -6,6 +6,9 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +20,7 @@ import com.sinius15.testing.basic.Point3D;
 import com.sinius15.testing.basic.Polygon2D;
 import com.sinius15.testing.basic.Polygon3D;
 
-public class RenderTest extends JPanel implements KeyListener{
+public class RenderTest extends JPanel implements KeyListener, MouseMotionListener, MouseListener{
 
 	public static final double SLEEP_TIME = 1000/30;
 	
@@ -26,7 +29,7 @@ public class RenderTest extends JPanel implements KeyListener{
 	
 	public List<Polygon2D> drawablePolys = new ArrayList<>();
 	public List<Polygon3D> worldPolygons = new ArrayList<>();
-	public Camera camera = new Camera(new Point3D(10, 0, 0), new Point3D(0, 0, 0));
+	public Camera camera = new Camera(new Point3D(12, 0, 0), new Point3D(0, 0, 0));
 	
 	public RenderTest(){
 		
@@ -36,7 +39,7 @@ public class RenderTest extends JPanel implements KeyListener{
 		//worldPolygons.add(new Polygon3D(new double[]{0, 0, 0}, new double[]{0, 5, 0}, new double[]{0, 0, 5}, Color.gray));
 		//worldPolygons.add(new Polygon3D(new double[]{2, 2, 2}, new double[]{0, 5, 0}, new double[]{0, 0, 5}, Color.red));
 		
-		int m = 5;
+		int m = 1;
 		worldPolygons.add(new Polygon3D(new double[]{0,m,m,0}, new double[]{0,0,0,0}, new double[]{0,0,m,m}, Color.red));
 		worldPolygons.add(new Polygon3D(new double[]{0,m,m,0}, new double[]{m,m,m,m}, new double[]{0,0,m,m}, Color.black));
 		worldPolygons.add(new Polygon3D(new double[]{m,m,m,m}, new double[]{0,0,m,m}, new double[]{0,m,m,0}, Color.blue));
@@ -44,13 +47,24 @@ public class RenderTest extends JPanel implements KeyListener{
 		worldPolygons.add(new Polygon3D(new double[]{0,m,m,0}, new double[]{0,0,m,m}, new double[]{0,0,0,0}, Color.magenta));
 		worldPolygons.add(new Polygon3D(new double[]{0,m,m,0}, new double[]{0,0,m,m}, new double[]{m,m,m,m}, Color.pink));
 		
+		for(int x = 0; x<10; x++){
+			for(int y = 0; y<10; y++){
+				worldPolygons.add(new Polygon3D(new double[]{x, x, x+1, x+1}, new double[]{y, y+1, y+1, y}, new double[]{0, 0, 0, 0}, Color.GRAY));
+			}
+		}
+		
+		
+		
 		//worldPolygons.add(new Polygon3D(new double[]{-100, -100, 100, 100}, new double[]{0, 0, 0, 0}, new double[]{-2, 2, 2, -2}, Color.red));   //x lineeee
 		addKeyListener(this);
+		addMouseMotionListener(this);
+		addMouseListener(this);
 		setFocusable(true);
 	}
 	
 	@Override
 	public void paint(Graphics g) {
+		camera.calculateViewTo();
 		g.clearRect(0, 0, Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
 		g.setColor(Color.black);
 		synchronized (drawablePolys) {
@@ -70,8 +84,11 @@ public class RenderTest extends JPanel implements KeyListener{
 		while(true){
 			synchronized (drawablePolys) {
 				drawablePolys.clear();
-				for(Polygon3D p : worldPolygons)
-					drawablePolys.add(p.createPolygon2D(camera));
+				for(Polygon3D p : worldPolygons){
+					if(p.isVisable(camera))
+						drawablePolys.add(p.createPolygon2D(camera));
+				
+				}
 			}	
 			
 			repaint();
@@ -109,31 +126,84 @@ public class RenderTest extends JPanel implements KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_RIGHT)   //wij gaan naar links en rechts en blijven kijken naar het object.
-				camera.viewFrom.y++;   
+		if(e.getKeyCode() == KeyEvent.VK_RIGHT)
+			camera.from.y++;   
 		if(e.getKeyCode() == KeyEvent.VK_LEFT)
-			  camera.viewFrom.y--;
-		if(e.getKeyCode() == KeyEvent.VK_A)    		//wij gaan naar vooren en naar achter
-			camera.viewFrom.x++;   
-		if(e.getKeyCode() == KeyEvent.VK_Q)
-			camera.viewFrom.x--;
-		
-		if(e.getKeyCode() == KeyEvent.VK_UP)    		//wij gaan naar boven en beneden
-			camera.viewFrom.z++;   
+			  camera.from.y--;
+		if(e.getKeyCode() == KeyEvent.VK_UP)   
+			camera.from.z++;   
 		if(e.getKeyCode() == KeyEvent.VK_DOWN)
-			camera.viewFrom.z--;
+			camera.from.z--;
 		
-//		if(e.getKeyCode() == KeyEvent.VK_RIGHT)
-//			camera.viewTo.y++;   //camera naar rechts
-//		if(e.getKeyCode() == KeyEvent.VK_LEFT)
-//		  camera.viewTo.y--;
+		
+		if(e.getKeyCode() == KeyEvent.VK_Q) 
+			camera.from.x++;   
+		if(e.getKeyCode() == KeyEvent.VK_E)
+			camera.from.x--;
+		
+		if(e.getKeyCode() == KeyEvent.VK_Z)
+			camera.from = new Point3D(5,5,5);
+
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
 			System.exit(0);
-		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+	}
+
+	int xOld = 0;
+	int yOld = 0;
+	boolean isIn = false;
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if(isIn){
+			if(e.getX() - xOld > 0){
+				camera.hoekHoriz-=1;
+				xOld = e.getX();
+			}
+			if(e.getX() - xOld < 0){
+				camera.hoekHoriz+=1;
+				xOld = e.getX();
+			}
+			if(e.getY() - yOld > 0){
+				yOld = e.getY();
+			}
+			if(e.getY() - yOld < 0){
+				yOld = e.getY();
+			}
+		}
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		isIn = true;
+		xOld = e.getX();
+		yOld = e.getY();
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		xOld = -1;
+		yOld = -1;
+		isIn = false;
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
 	}
 	
 }

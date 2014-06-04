@@ -2,7 +2,6 @@ package com.sinius15.testing.basic;
 
 import java.awt.Color;
 
-import com.sinius15.testing.Calculator;
 import com.sinius15.testing.Camera;
 import com.sinius15.testing.RenderTest;
 
@@ -23,7 +22,7 @@ public class Polygon3D {
 		Polygon2D out = new Polygon2D();
 		out.color = c;
 		for(int i = 0; i<x.length; i++){
-			Point2D point = Calculator.calculatePosition(cam, x[i], y[i], z[i]);
+			Point2D point = cam.dddtodd( x[i], y[i], z[i]);
 			if(point == null)
 				continue;
 			point.x =  50*point.x - RenderTest.screenSize.width/2;
@@ -31,7 +30,7 @@ public class Polygon3D {
 			out.addPoint(point.getIntPoint());
 			
 		}
-		out.avgDist = getAverageDistance(cam.viewFrom);
+		out.avgDist = getAverageDistance(cam.from);
 		return out;
 	}
 	
@@ -40,6 +39,10 @@ public class Polygon3D {
 		for(int i = 0; i<x.length; i++)
 			total += new Point3D(x[i], y[i], z[i]).getDistance(point);
 		return total / x.length;
+	}
+
+	public boolean isVisable(Camera camera) {
+		return false;
 	}
 	
 	

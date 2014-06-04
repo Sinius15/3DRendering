@@ -32,6 +32,19 @@ public class Point2D {
 		this.y = y;
 	}
 	
+	public double getDistance(Point2D p){
+		double dx = Math.abs(p.x - x);
+		double dy = Math.abs(p.y - y);
+		return Math.sqrt(
+				dx*dx + dy*dy
+				);
+	}
+
+	@Override
+	public String toString() {
+		return "Point2D [x=" + x + ", y=" + y + "]";
+	}
+	
 	
 	
 }

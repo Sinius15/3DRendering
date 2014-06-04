@@ -42,6 +42,11 @@ public class Point3D {
 				Math.abs((z-p.z)*(z-p.z))
 				);
 	}
+
+	@Override
+	public String toString() {
+		return "Point3D [x=" + x + ", y=" + y + ", z=" + z + "]";
+	}
 	
 	
 }

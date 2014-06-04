@@ -1,33 +1,85 @@
 package com.sinius15.testing;
 
+import com.sinius15.testing.basic.Point2D;
 import com.sinius15.testing.basic.Point3D;
 
 public class Camera {
 
-	public Point3D viewFrom;
-	public Point3D viewTo;
+	public Point3D from;
+	public Point3D to;
+	public double hoekHoriz = 0;
+	public double distance = 10;
 	
 	public static final int X = 0, Y = 1, Z = 1;
 	
 	public Camera(Point3D viewFrom, Point3D viewTo) {
-		this.viewFrom = viewFrom;
-		this.viewTo = viewTo;
+		this.from = viewFrom;
+		this.to = viewTo;
 	}
 	
 	public Vector3D getVector(){
-		return new Vector3D(viewTo.x - viewFrom.x, viewTo.y - viewFrom.y, viewTo.z - viewFrom.z);
+		return new Vector3D(to.x - from.x, to.y - from.y, to.z - from.z);
 	}
 	
 	public Vector3D getRotationVector(){
-		double dx = Math.abs(viewFrom.x-viewTo.x);
-		double dy = Math.abs(viewFrom.x-viewTo.x);
+		double dx = Math.abs(from.x-to.x);
+		double dy = Math.abs(from.x-to.x);
 		double xRot = dy/(dx+dy);
 		double yRot = dx/(dx+dy);
-		if(viewFrom.y > viewTo.y)
+		if(from.y > to.y)
 			xRot = -xRot;
-		if(viewFrom.x < viewTo.x)
+		if(from.x < to.x)
 			yRot = -yRot;
 		return new Vector3D(xRot, yRot, 0);
 	}
+
+	public double getDistance(){
+		return from.getDistance(to);
+	}
+	
+	public void calculateViewTo(){
+		
+		double a = Math.toRadians(hoekHoriz);
+		to.y = from.y + distance*Math.cos(a);
+		to.x = from.x + distance*Math.sin(a);
+		if(hoekHoriz >= 360)
+			hoekHoriz = 0;
+		if(hoekHoriz < 0)
+			hoekHoriz = 360;
+
+	}
+
+	@Override
+	public String toString() {
+		return "Camera [from=" + from + ", to=" + to + ", hoekHoriz=" + hoekHoriz + ", getDistance()=" + getDistance() + "]";
+	}
+	
+	public Point2D dddtodd(double x, double y, double z){
+		Vector3D view, viewToPoint, rotation, weird1, weird2;
+		
+		view = getVector();
+		
+		rotation = getRotationVector();
+		weird1 = view.crossProduct(rotation);
+		weird2 = view.crossProduct(weird1);
+		
+		
+		viewToPoint = new Vector3D(x - from.x, y - from.y, z - from.z);
+		
+		double t =
+				 (view.x * to.x + view.y * to.y + view.z * to.z)
+				-(view.x * from.x + view.y * from.y + view.z * from.z)
+				/(view.x * viewToPoint.x           + view.y * viewToPoint.y + view.z * viewToPoint.z);
+		
+		x = from.x + viewToPoint.x * t;
+		y = from.y + viewToPoint.y * t;
+		z = from.z + viewToPoint.z * t;
+		
+		if(t < 0)
+			return null;
+		return new Point2D(weird2.x * x + weird2.y * y + weird2.z * z, weird1.x * x + weird1.y * y + weird1.z * z);		
+
+	}
+	
 	
 }
