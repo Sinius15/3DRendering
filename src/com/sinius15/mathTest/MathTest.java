@@ -19,6 +19,8 @@ public class MathTest {
 		
 		System.out.println(vec1.toString());
 		System.out.println(vec2.toString());
+	
+		System.out.println();
 	}
 	
 }
