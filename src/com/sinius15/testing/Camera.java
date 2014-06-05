@@ -2,6 +2,7 @@ package com.sinius15.testing;
 
 import com.sinius15.testing.basic.Point2D;
 import com.sinius15.testing.basic.Point3D;
+import com.sinius15.testing.basic.Vector3D;
 
 public class Camera {
 
@@ -37,14 +38,8 @@ public class Camera {
 	
 	public void calculateViewTo(){
 		
-		double v = Math.toRadians(hoekVertic);    //verticale hoek in radian
-		double h = Math.toRadians(hoekHoriz);     //horizontale hoek in radian
-		
-		to.z = from.z + distance * Math.cos(v);
-		double r2 = distance * Math.sin(v);
-		
-		to.y = from.y + r2*Math.cos(h);
-		to.x = from.x + r2*Math.sin(h);
+		Vector3D vec = new Vector3D(from, distance, hoekHoriz, hoekVertic);
+		to = vec.getToPoint();
 		
 		System.out.println(hoekHoriz);
 		
@@ -53,10 +48,10 @@ public class Camera {
 			hoekHoriz = 0;
 		if(hoekHoriz < 0)
 			hoekHoriz = 359;
-		if(hoekVertic >= 90)
+		if(hoekVertic > 90)
 			hoekVertic = 90;
-		if(hoekVertic < 0)
-			hoekVertic = 0;
+		if(hoekVertic < -90)
+			hoekVertic = -90;
 
 	}
 	
