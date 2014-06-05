@@ -41,17 +41,15 @@ public class Camera {
 		Vector3D vec = new Vector3D(from, distance, hoekHoriz, hoekVertic);
 		to = vec.getToPoint();
 		
-		System.out.println(hoekHoriz);
-		
 		
 		if(hoekHoriz >= 360)
 			hoekHoriz = 0;
 		if(hoekHoriz < 0)
 			hoekHoriz = 359;
-		if(hoekVertic > 90)
-			hoekVertic = 90;
-		if(hoekVertic < -90)
-			hoekVertic = -90;
+		if(hoekVertic > 180)
+			hoekVertic = 180;
+		if(hoekVertic < 0)
+			hoekVertic = 0;
 
 	}
 	

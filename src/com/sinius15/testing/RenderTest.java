@@ -50,6 +50,8 @@ public class RenderTest extends JPanel implements KeyListener, MouseMotionListen
 			}
 		}
 		
+		worldPolygons.add(new Polygon3D(new double[]{0, 3, 0}, new double[]{0, 0, 3}, new double[]{0, 0, 0}, Color.red));
+		
 		addKeyListener(this);
 		addMouseMotionListener(this);
 		addMouseListener(this);

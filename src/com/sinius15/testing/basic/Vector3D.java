@@ -2,7 +2,7 @@ package com.sinius15.testing.basic;
 
 public class Vector3D {
 
-	public double x, y, z, length, hoekHoriz, hoekVertic;
+	public double x, y, z, length, hoekHoriz, hoekVertic;   //hoekVerticaal 0 betekent recht omhoog, 180 betekent recht naar beneden
 
 	public Vector3D(double x, double y, double z, double length, double hoekHoriz, double hoekVertic) {
 		this.x = x;
@@ -35,11 +35,9 @@ public class Vector3D {
 		
 		double s = Math.sqrt(dx*dx+dy*dy);
 		
-		this.hoekHoriz = Math.toDegrees(Math.asin(dx / s));
-		this.hoekVertic = Math.toDegrees(Math.acos(dz/length));
-		if(dz < 0)
-			this.hoekVertic = -1*Math.abs(this.hoekVertic);
-		this.hoekHoriz = Math.abs(this.hoekHoriz);
+		this.hoekHoriz = Math.abs(Math.toDegrees(Math.asin(dx / s)));
+		this.hoekVertic = Math.abs(Math.toDegrees(Math.asin(dz / this.length)));
+		
 	}
 
 	public Point3D getToPoint(){
@@ -48,7 +46,11 @@ public class Vector3D {
 		double v = Math.toRadians(hoekVertic);    //verticale hoek in radian
 		double h = Math.toRadians(hoekHoriz);     //horizontale hoek in radian
 		
-		to.z = z + length * ( (to.z-z < 0) ? -1*Math.cos(v) : Math.cos(v) );
+		//to.z = z + length * ( (to.z-z < 0) ? -1*Math.cos(v) : Math.cos(v) );
+		//to.z = z + ( (to.z-z < 0) ? -1*(length*Math.cos(v)) : length*Math.cos(v) );
+		
+		to.z = z + length * Math.cos(v);
+
 		double r2 = length * Math.sin(v);
 		
 		to.y = y + r2*Math.cos(h);

@@ -6,7 +6,7 @@ import com.sinius15.testing.basic.Vector3D;
 public class MathTest {
 
 	public static void main(String[] args) {
-		Vector3D vec1 = new Vector3D(10, 10, 10, 20, 30, -12);
+		Vector3D vec1 = new Vector3D(10, 10, 10, 20, 0, 170);
 		
 		Point3D pTo = vec1.getToPoint();
 		Point3D pFrom = vec1.getFromPoint();

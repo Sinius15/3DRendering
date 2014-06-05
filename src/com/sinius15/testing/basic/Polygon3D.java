@@ -44,10 +44,12 @@ public class Polygon3D {
 	public boolean isVisable(Camera cam){
 		for(int i = 0; i<x.length; i++){
 			Vector3D vec = new Vector3D(cam.from, new Point3D(x[i], y[i], z[i]));
-//			if(Math.abs(cam.hoekHoriz - vec.hoekHoriz) > 50)
-//				return false;
-//			if(Math.abs(cam.hoekVertic - vec.hoekVertic) > 600)
-//				return false;
+//			System.out.println("cam.hoekHorizontal: " + cam.hoekHoriz + "  vec.hoekHorizontal: " + vec.hoekHoriz);
+//			System.out.println("cam.hoekVertical: " + cam.hoekVertic + "  vec.hoekVertical: " + vec.hoekVertic);
+			if(Math.abs(cam.hoekHoriz - vec.hoekHoriz) > 50)
+				return false;
+			if(Math.abs(cam.hoekVertic - vec.hoekVertic) > 200)
+				return false;
 		}
 		
 		return true;
