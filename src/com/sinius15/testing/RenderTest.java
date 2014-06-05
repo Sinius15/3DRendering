@@ -1,8 +1,8 @@
 package com.sinius15.testing;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -24,7 +24,7 @@ public class RenderTest extends JPanel implements KeyListener, MouseMotionListen
 
 	public static final double SLEEP_TIME = 1000/30;
 	
-	public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	public static Rectangle screenSize = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 	private static final long serialVersionUID = 1L;
 	
 	public List<Polygon2D> drawablePolys = new ArrayList<>();
@@ -35,9 +35,6 @@ public class RenderTest extends JPanel implements KeyListener, MouseMotionListen
 		
 		drawablePolys = (List<Polygon2D>) Collections.synchronizedList(drawablePolys);
 		worldPolygons = (List<Polygon3D>) Collections.synchronizedList(worldPolygons);
-		
-		//worldPolygons.add(new Polygon3D(new double[]{0, 0, 0}, new double[]{0, 5, 0}, new double[]{0, 0, 5}, Color.gray));
-		//worldPolygons.add(new Polygon3D(new double[]{2, 2, 2}, new double[]{0, 5, 0}, new double[]{0, 0, 5}, Color.red));
 		
 		int m = 1;
 		worldPolygons.add(new Polygon3D(new double[]{0,m,m,0}, new double[]{0,0,0,0}, new double[]{0,0,m,m}, Color.red));
@@ -53,9 +50,6 @@ public class RenderTest extends JPanel implements KeyListener, MouseMotionListen
 			}
 		}
 		
-		
-		
-		//worldPolygons.add(new Polygon3D(new double[]{-100, -100, 100, 100}, new double[]{0, 0, 0, 0}, new double[]{-2, 2, 2, -2}, Color.red));   //x lineeee
 		addKeyListener(this);
 		addMouseMotionListener(this);
 		addMouseListener(this);
@@ -84,10 +78,9 @@ public class RenderTest extends JPanel implements KeyListener, MouseMotionListen
 		while(true){
 			synchronized (drawablePolys) {
 				drawablePolys.clear();
-				for(Polygon3D p : worldPolygons){
-					if(p.isVisable(camera))
-						drawablePolys.add(p.createPolygon2D(camera));
-				
+				for(Polygon3D p3 : worldPolygons){
+					if(p3.isVisable(camera))
+						drawablePolys.add(p3.createPolygon2D(camera));
 				}
 			}	
 			
@@ -107,7 +100,7 @@ public class RenderTest extends JPanel implements KeyListener, MouseMotionListen
 		JFrame f = new JFrame();
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setUndecorated(true);
-		f.setSize(screenSize);
+		f.setSize(screenSize.getSize());
 		f.add(t);
 		f.setVisible(true);
 		new Thread(new Runnable() {
@@ -167,9 +160,11 @@ public class RenderTest extends JPanel implements KeyListener, MouseMotionListen
 				xOld = e.getX();
 			}
 			if(e.getY() - yOld > 0){
+				camera.hoekVertic-=1;
 				yOld = e.getY();
 			}
 			if(e.getY() - yOld < 0){
+				camera.hoekVertic+=1;
 				yOld = e.getY();
 			}
 		}

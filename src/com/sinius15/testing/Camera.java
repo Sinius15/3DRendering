@@ -7,21 +7,19 @@ public class Camera {
 
 	public Point3D from;
 	public Point3D to;
-	public double hoekHoriz = 0;
+	public double hoekHoriz = 0, hoekVertic = 0;
 	public double distance = 10;
-	
-	public static final int X = 0, Y = 1, Z = 1;
 	
 	public Camera(Point3D viewFrom, Point3D viewTo) {
 		this.from = viewFrom;
 		this.to = viewTo;
 	}
 	
-	public Vector3D getVector(){
-		return new Vector3D(to.x - from.x, to.y - from.y, to.z - from.z);
+	public Vector3DX getVector(){
+		return new Vector3DX(to.x - from.x, to.y - from.y, to.z - from.z);
 	}
 	
-	public Vector3D getRotationVector(){
+	public Vector3DX getRotationVector(){
 		double dx = Math.abs(from.x-to.x);
 		double dy = Math.abs(from.x-to.x);
 		double xRot = dy/(dx+dy);
@@ -30,7 +28,7 @@ public class Camera {
 			xRot = -xRot;
 		if(from.x < to.x)
 			yRot = -yRot;
-		return new Vector3D(xRot, yRot, 0);
+		return new Vector3DX(xRot, yRot, 0);
 	}
 
 	public double getDistance(){
@@ -39,23 +37,31 @@ public class Camera {
 	
 	public void calculateViewTo(){
 		
-		double a = Math.toRadians(hoekHoriz);
-		to.y = from.y + distance*Math.cos(a);
-		to.x = from.x + distance*Math.sin(a);
+		double v = Math.toRadians(hoekVertic);    //verticale hoek in radian
+		double h = Math.toRadians(hoekHoriz);     //horizontale hoek in radian
+		
+		to.z = from.z + distance * Math.cos(v);
+		double r2 = distance * Math.sin(v);
+		
+		to.y = from.y + r2*Math.cos(h);
+		to.x = from.x + r2*Math.sin(h);
+		
+		System.out.println(hoekHoriz);
+		
+		
 		if(hoekHoriz >= 360)
 			hoekHoriz = 0;
 		if(hoekHoriz < 0)
-			hoekHoriz = 360;
+			hoekHoriz = 359;
+		if(hoekVertic >= 90)
+			hoekVertic = 90;
+		if(hoekVertic < 0)
+			hoekVertic = 0;
 
-	}
-
-	@Override
-	public String toString() {
-		return "Camera [from=" + from + ", to=" + to + ", hoekHoriz=" + hoekHoriz + ", getDistance()=" + getDistance() + "]";
 	}
 	
 	public Point2D dddtodd(double x, double y, double z){
-		Vector3D view, viewToPoint, rotation, weird1, weird2;
+		Vector3DX view, viewToPoint, rotation, weird1, weird2;
 		
 		view = getVector();
 		
@@ -64,7 +70,7 @@ public class Camera {
 		weird2 = view.crossProduct(weird1);
 		
 		
-		viewToPoint = new Vector3D(x - from.x, y - from.y, z - from.z);
+		viewToPoint = new Vector3DX(x - from.x, y - from.y, z - from.z);
 		
 		double t =
 				 (view.x * to.x + view.y * to.y + view.z * to.z)
@@ -80,6 +86,13 @@ public class Camera {
 		return new Point2D(weird2.x * x + weird2.y * y + weird2.z * z, weird1.x * x + weird1.y * y + weird1.z * z);		
 
 	}
+
+	@Override
+	public String toString() {
+		return "Camera [from=" + from + ", to=" + to + ", hoekHoriz="
+				+ hoekHoriz + ", hoekVertic=" + hoekVertic + "]";
+	}
+	
 	
 	
 }

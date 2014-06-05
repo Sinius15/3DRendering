@@ -40,9 +40,17 @@ public class Polygon3D {
 			total += new Point3D(x[i], y[i], z[i]).getDistance(point);
 		return total / x.length;
 	}
-
-	public boolean isVisable(Camera camera) {
-		return false;
+	
+	public boolean isVisable(Camera cam){
+		for(int i = 0; i<x.length; i++){
+			Vector3D vec = new Vector3D(cam.from, new Point3D(x[i], y[i], z[i]));
+			if(Math.abs(cam.hoekHoriz - vec.hoekHoriz) > 50)
+				return false;
+			if(Math.abs(cam.hoekVertic - vec.hoekVertic) > 600)
+				return false;
+		}
+		
+		return true;
 	}
 	
 	

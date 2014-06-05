@@ -3,6 +3,7 @@ package com.sinius15.testing.basic;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 
 import com.sinius15.testing.RenderTest;
 
@@ -46,6 +47,15 @@ public class Polygon2D extends Polygon implements Comparable<Polygon2D>{
 		    
 		    ypoints[i] = RenderTest.screenSize.height - ypoints[i];
 		}
+	}
+
+	public boolean isInside(Rectangle rec) {
+		for(int i = 0; i < npoints; i++){
+			if(!rec.contains(new Point(xpoints[i], ypoints[i]))){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 }
